@@ -1,0 +1,225 @@
+[gd_scene load_steps=30 format=3 uid="uid://d0x8nac5vhbgr"]
+
+[ext_resource type="Texture2D" uid="uid://ba8mkcpedjwfo" path="res://textures/texture_07.png" id="1_cusaw"]
+[ext_resource type="Resource" uid="uid://bk5yd5plopwi2" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/simple_jf_blur_stage.tres" id="1_hhp7m"]
+[ext_resource type="Resource" uid="uid://cslvcweyejh3c" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_camera_movement_component.tres" id="1_uwwt1"]
+[ext_resource type="Resource" uid="uid://iru8ynu04i00" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_camera_rotation_component.tres" id="2_23y6s"]
+[ext_resource type="Texture2D" uid="uid://ki81m3ksv2rq" path="res://textures/texture_10.png" id="2_tn0m0"]
+[ext_resource type="Resource" uid="uid://bj3exhmsfcx4w" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/jf_simple_stage.tres" id="2_wq5yc"]
+[ext_resource type="Resource" uid="uid://rp3mpjmisoyh" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/default_object_movement_component.tres" id="3_f8u2o"]
+[ext_resource type="Script" path="res://scenes/box.gd" id="3_v424x"]
+[ext_resource type="Resource" uid="uid://co5k7plgmxepi" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/jump_flood_neighbor_max_stage.tres" id="3_yh1b6"]
+[ext_resource type="Resource" uid="uid://c8ulad7utgrg7" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/pre_blur_processing_stage.tres" id="4_bhxiy"]
+[ext_resource type="Resource" uid="uid://dc5fr84ue3dn5" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/jump_flood_overlay_stage.tres" id="4_qv815"]
+[ext_resource type="Script" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/simple_jf_motion_blur.gd" id="5_2mtmg"]
+[ext_resource type="Script" path="res://addons/SphynxMotionBlurToolkit/PreBlurProcessing/pre_blur_processor.gd" id="5_qxb5c"]
+[ext_resource type="Resource" uid="uid://c10aboaly701b" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/jump_flood_tile_max_x_stage.tres" id="6_2r71x"]
+[ext_resource type="Resource" uid="uid://cymk87e4nyxva" path="res://addons/SphynxMotionBlurToolkit/JumpFlood/jump_flood_tile_max_y_stage.tres" id="7_4ash2"]
+[ext_resource type="Script" path="res://addons/SphynxMotionBlurToolkit/BaseClasses/mb_compositor.gd" id="8_yvy3t"]
+[ext_resource type="Script" path="res://scenes/node_3d.gd" id="17_maycc"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gvq3u"]
+sky_top_color = Color(0.351661, 0.417676, 0.509514, 1)
+sky_horizon_color = Color(0.587915, 0.604419, 0.627378, 1)
+sky_energy_multiplier = 2.05
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0.587915, 0.604419, 0.627378, 1)
+
+[sub_resource type="Sky" id="Sky_50p7h"]
+sky_material = SubResource("ProceduralSkyMaterial_gvq3u")
+
+[sub_resource type="Environment" id="Environment_wpnck"]
+background_mode = 2
+sky = SubResource("Sky_50p7h")
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_2fjvn"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("5_qxb5c")
+pre_blur_processor_stage = ExtResource("4_bhxiy")
+camera_rotation_component = ExtResource("2_23y6s")
+camera_movement_component = ExtResource("1_uwwt1")
+object_movement_component = ExtResource("3_f8u2o")
+debug = false
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_bd1vq"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("5_2mtmg")
+tile_max_x_stage = ExtResource("6_2r71x")
+tile_max_y_stage = ExtResource("7_4ash2")
+construct_stage = ExtResource("2_wq5yc")
+neighbor_max_stage = ExtResource("3_yh1b6")
+blur_stage = ExtResource("1_hhp7m")
+overlay_stage = ExtResource("4_qv815")
+perpen_error_threshold = 0.5
+sample_step_multiplier = 16
+step_exponent_modifier = 1.0
+JFA_pass_count = 3
+debug = false
+
+[sub_resource type="Compositor" id="Compositor_2kvku"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_2fjvn"), SubResource("CompositorEffect_bd1vq")])
+script = ExtResource("8_yvy3t")
+samples = 64
+intensity = 1.0
+center_fade = 0.0
+framerate_independent = true
+uncapped_independence = false
+target_constant_framerate = 144.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j3odp"]
+albedo_texture = ExtResource("1_cusaw")
+uv1_triplanar = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_rhl6p"]
+material = SubResource("StandardMaterial3D_j3odp")
+size = Vector2(500, 500)
+orientation = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_henlc"]
+size = Vector3(500, 1, 500)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tk014"]
+albedo_texture = ExtResource("2_tn0m0")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_655od"]
+material = SubResource("StandardMaterial3D_tk014")
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gnni6"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 2.89
+
+[node name="Scene" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wpnck")
+compositor = SubResource("Compositor_2kvku")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("QuadMesh_rhl6p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_henlc")
+
+[node name="Box" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_655od")
+script = ExtResource("3_v424x")
+rotationVelocity = 10
+
+[node name="Box2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19237, 0.275772, -6.02436)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.00125, 0.275772, -6.90907)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7315, 0.275772, -2.29478)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.4868, 0.275772, -9.58997)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.8413, 0.275772, 8.99513)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.035, 0.275772, -4.15819)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.0597, 0.275772, 10.7645)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box9" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.42206, 0.275772, 6.88613)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box10" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.3053, 0.275772, 26.6189)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box14" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.3235, 0.275769, 12.9123)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.3979, 0.275769, -34.3579)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box16" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.8791, 0.275765, -14.9607)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box17" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.9236, 0.275761, -7.4135)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box18" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.995, 0.275757, 7.66418)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box19" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.4185, 0.275757, 48.5463)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box20" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72.3692, -60.5007, 48.5463)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box21" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.7403, -60.5007, -66.3659)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box22" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0683, -60.5007, -71.6431)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box23" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0683, -60.5007, -71.6431)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box11" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4563, 0.275772, 19.0373)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.30369, 0.275772, 24.6582)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Box13" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.30369, 0.275772, 24.6582)
+mesh = SubResource("BoxMesh_655od")
+
+[node name="Node3D" type="Node3D" parent="."]
+script = ExtResource("17_maycc")
+rotation_speed = 5.0
+
+[node name="Camera3D" type="Camera3D" parent="Node3D"]
+transform = Transform3D(-3.97325e-08, 0.416852, -0.908974, 1.82212e-08, 0.908974, 0.416852, 1, 5.32907e-15, -4.37114e-08, -2.94423, 2.2051, 0)
+attributes = SubResource("CameraAttributesPractical_gnni6")
+fov = 37.8493
